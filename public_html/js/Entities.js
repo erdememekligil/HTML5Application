@@ -24,6 +24,9 @@ Entity = Class.extend({
 
 Hero = Entity.extend({
     speed: 256,
+    init: function(){
+        this.imageLoad();
+    },
     imageLoad : function(){
         var myImg = new Image();
         myImg.onload = function(){
@@ -35,31 +38,16 @@ Hero = Entity.extend({
     },
     
     reset : function(){
-        hero.pos.x = canvas.width / 2;
-        hero.pos.y = canvas.height / 2;
+        this.pos.x = canvas.width / 2;
+        this.pos.y = canvas.height / 2;
     }
 });
-/*
-var hero = {
-    x: 0,
-    y: 0,
-    speed: 256,
-    img : null,
-    ready : false
-};
-hero.img = new Image();
-hero.img.onload =  function() {
-    hero.ready = true;
-};
-hero.img.src = "img/hero.png";*/
-/*
-var monster = {
-    x:0,
-    y:0
-};
-*/
+
 Monster = Entity.extend({
     speed: 100,
+    init: function(){
+        this.imageLoad();
+    },
     imageLoad : function(){
         this.img = new Image();
         this.img.onload = function(){
@@ -69,7 +57,7 @@ Monster = Entity.extend({
     },
 
     reset : function(){
-        monster.pos.x = 32 + (Math.random() * (canvas.width - 64));
-        monster.pos.y = 32 + (Math.random() * (canvas.height - 64));
+        this.pos.x = 32 + (Math.random() * (canvas.width - 64));
+        this.pos.y = 32 + (Math.random() * (canvas.height - 64));
     }
 });

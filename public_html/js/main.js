@@ -14,36 +14,14 @@ bgImage.onload = function() {
 bgImage.src = "img/background.png";
 
 
-var render = function () {
-    if(bgReady)
-        ctx.drawImage(bgImage, 0, 0);
-    for(var i=0; i<monsters.length; i++){
-        if(monsters[i].ready)
-            ctx.drawImage(monsters[i].img, monsters[i].pos.x, monsters[i].pos.y);
-    }
-    for(var i=0; i<heroes.length; i++){
-        if(heroes[i].ready)
-            ctx.drawImage(heroes[i].img, heroes[i].pos.x, heroes[i].pos.y);
-    }
-    
-    // Score
-    ctx.fillStyle = "rgb(250, 250, 250)";
-    ctx.font = "24px Helvetica";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText("Goblins caught: " + score, 32, 32);
-    if(remainingTime <= 0)
-        ctx.fillText("Game Over",32,0);
-    else
-        ctx.fillText("Time: " + Math.floor(remainingTime),32,0);
-};
 
 var mainLoop = function() {
     var now = Date.now();
     var delta = now - then;
     remainingTime = remainingTime - delta/1000;
+    //Stop the game
     if(remainingTime <= 0){
-        clearInterval(spawnMonsterInterval)
+        clearInterval(spawnMonsterInterval);
         clearInterval(mainLoopInterval);
     }
     
@@ -51,17 +29,21 @@ var mainLoop = function() {
     updateObjectPositions(hero,delta / 1000);
     //Collisions
     for(var i=0; i<heroes.length; i++){
+        for(var j=0; j<flames.length; j++){
+            if(heroes[i].collides(flames[j])){
+                heroes[i].reset();
+                flames[j].reset();
+            }
+        }
         for(var j=0; j<monsters.length; j++){
             if(heroes[i].collides(monsters[j]) ){
                 heroes[i].reset();
                 score++;
-                monsters.splice(j,1);
+                monsters.splice(j,1); //Erase
             }
         }
     }
-    
-    
-    render();
+    graphicsEngine.render();
     then = now;
 };
 
@@ -72,14 +54,22 @@ var spawnMonster = function(){
 };
 
 //Initialize game objects
+// TODO : Create a game object class or disribute these to existing classes.
 var heroes = [];
 var monsters = [];
+var points = [];
+var flames = [];
 
 var hero = new Hero();
 heroes.push(hero);
 
 var monster = new Monster();
 monsters.push(monster);
+
+var flame = new Flames();
+flame.pos.x = 100;
+flame.pos.y = 100;
+flames.push(flame);
 
 //Initialize game
 var score = 0;
@@ -90,3 +80,4 @@ monster.reset();
 var then = Date.now();
 var mainLoopInterval = setInterval(mainLoop,100/3);//30FPS
 var spawnMonsterInterval = setInterval(spawnMonster,1000);//Every second.
+var graphicsEngine = new Graphics();
